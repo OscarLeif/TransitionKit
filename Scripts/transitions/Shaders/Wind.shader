@@ -41,7 +41,8 @@ float rand( float2 co )
 fixed4 frag( v2f_img i ) : COLOR
 {
 	float r = rand( floor( float2( 0.0, i.uv.y * _WindVerticalSegments ) ) );
-	float m = smoothstep( 0.0, -_Size, i.uv.x * ( 1.0 - _Size ) + _Size * r - ( _Progress * ( 1.0 + _Size ) ) );
+
+	float m = smoothstep( 0.0,-_Size,i.uv.x * ( 1.0 - _Size ) + _Size * r - ( _Progress * ( 1.0 + _Size ) ) );
 
 	return lerp( tex2D( _MainTex, i.uv ), fixed4( 0.0, 0.0, 0.0, 0.0 ), m );
 }
