@@ -19,6 +19,11 @@ Between Scene Transitions
 
 Switching scenes with Unity in a classy-looking fashion can be tricky. TransitionKit aims to simplify the process. All of the built in transitions allow you to specify an optional new scene to load and they will wait for it to load before the screen is unobscured.
 
+Show Me Some Code!
+-----
+How to install via package manager, just add this lines in the package.json file
+
+	"com.oscarleif.transitionkit": "https://github.com/OscarLeif/TransitionKit.git",
 
 
 Show Me Some Code!
