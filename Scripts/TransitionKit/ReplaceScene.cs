@@ -8,7 +8,7 @@ namespace Prime31.TransitionKit
     public class ReplaceScene : MonoBehaviour
     {
         public Texture2D maskTexture;
-
+        [Tooltip("If UI Visible is True, transition is not working, False transition is working")]
         private bool _isUiVisible = true;
 
         public bool UiVisible
@@ -184,11 +184,6 @@ namespace Prime31.TransitionKit
         private void onTransitionComplete()
         {
             _isUiVisible = true;
-        }
-
-        internal static void FadeScene(string sceneName, int v, Func<object> p)
-        {
-            throw new NotImplementedException();
-        }
+        }        
     }
 }

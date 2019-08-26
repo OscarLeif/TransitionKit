@@ -63,7 +63,7 @@ namespace Prime31.TransitionKit
                 transitionKit.StartCoroutine(FollowTargetPosition(transitionKit));
             }
             //Circle open to close animation
-            yield return transitionKit.StartCoroutine(transitionKit.tickProgressPropertyInMaterial(duration / 3, false));
+            yield return transitionKit.StartCoroutine(transitionKit.tickProgressPropertyInMaterial(duration, false));
             //Load a new Scene by index or name string (heavy)
             if (nextScene >= 0)
             {
@@ -90,7 +90,7 @@ namespace Prime31.TransitionKit
             }
 
             // Open the Circle a new scene should be loaded, if not scene will be the same
-            yield return transitionKit.StartCoroutine(transitionKit.tickProgressPropertyInMaterial(duration / 3, true));
+            yield return transitionKit.StartCoroutine(transitionKit.tickProgressPropertyInMaterial(duration, true));
         }
 
         public IEnumerator FollowTargetPosition(TransitionKit transitionKit)
