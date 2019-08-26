@@ -21,7 +21,6 @@ namespace Prime31.TransitionKit
 
         public System.Action actionDelegate;
 
-
         #region TransitionKitDelegate
 
         public Shader shaderForTransition()
@@ -65,7 +64,7 @@ namespace Prime31.TransitionKit
             float actionTime = duration / 2;
             AsyncOperation asyncLevelLoad = null;
 
-            yield return transitionKit.StartCoroutine(transitionKit.tickProgressPropertyInMaterial(duration, true));
+            yield return transitionKit.StartCoroutine(transitionKit.tickProgressPropertyInMaterial(actionTime, true));
             //Debug.Log("Fade In completed");
 
             if (this.actionDelegate != null)
@@ -89,10 +88,11 @@ namespace Prime31.TransitionKit
             }
 
             //Delay for animation
+            //Here was making issues we nee to stop some seconds
             yield return new WaitForSecondsRealtime(actionTime);
 
             //Debug.Log("Start Fadeout");
-            yield return transitionKit.StartCoroutine(transitionKit.tickProgressPropertyInMaterial(duration));
+            yield return transitionKit.StartCoroutine(transitionKit.tickProgressPropertyInMaterial(actionTime));
             //Debug.Log("Completed Fadeout");
 
         }
