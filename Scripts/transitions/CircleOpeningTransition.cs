@@ -16,6 +16,8 @@ namespace Prime31.TransitionKit
 
         public float CircleOpeneingDelay;
 
+        public System.Action actionCallbackBeforeLoadScene;
+
         private float ratio;
 
         public Shader shaderForTransition()
@@ -64,6 +66,10 @@ namespace Prime31.TransitionKit
             }
             //Circle open to close animation
             yield return transitionKit.StartCoroutine(transitionKit.tickProgressPropertyInMaterial(duration, false));
+
+            if (this.actionCallbackBeforeLoadScene != null)
+                this.actionCallbackBeforeLoadScene.Invoke();
+
             //Load a new Scene by index or name string (heavy)
             if (nextScene >= 0)
             {

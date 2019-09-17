@@ -19,7 +19,7 @@ namespace Prime31.TransitionKit
         public int nextScene = -1;
         public string nextSceneName;
 
-        public System.Action actionDelegate;
+        public System.Action actionCallbackBeforeLoadScene;
 
         #region TransitionKitDelegate
 
@@ -67,8 +67,8 @@ namespace Prime31.TransitionKit
             yield return transitionKit.StartCoroutine(transitionKit.tickProgressPropertyInMaterial(actionTime, true));
             //Debug.Log("Fade In completed");
 
-            if (this.actionDelegate != null)
-                this.actionDelegate.Invoke();
+            if (this.actionCallbackBeforeLoadScene != null)
+                this.actionCallbackBeforeLoadScene.Invoke();
 
             if (nextScene >= 0)
             {

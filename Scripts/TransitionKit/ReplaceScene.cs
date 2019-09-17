@@ -82,7 +82,7 @@ namespace Prime31.TransitionKit
             TransitionKit.instance.transitionWithDelegate(fader);
         }
 
-        public static void FadeScene(string sceneName, float secondsAction = 1f, Action actionDelegate=null)
+        public static void FadeScene(string sceneName, float secondsAction = 1f, Action actionBeforeLoadScene = null)
         {
             if (Inst.UiVisible == false)
             {
@@ -95,7 +95,7 @@ namespace Prime31.TransitionKit
                 fadeToColor = Color.black,
                 duration = secondsAction,
                 //imageTexture = ReplaceScene.Inst.maskTexture
-                actionDelegate = actionDelegate
+                actionCallbackBeforeLoadScene = actionBeforeLoadScene
             };
             TransitionKit.instance.transitionWithDelegate(fader);
         }
@@ -117,7 +117,9 @@ namespace Prime31.TransitionKit
             TransitionKit.instance.transitionWithDelegate(mask);*/
         }
 
-        public static void OpenCircle(int sceneIndex, float secondsToWait = 2f, float smoothness = 0.001f, GameObject targetObj = null, Color? c = null)
+
+
+        public static void OpenCircle(int sceneIndex, float secondsToWait = 2f, float smoothness = 0.001f, GameObject targetObj = null, Color? c = null, Action actionBeforeLoadScene = null)
         {
             if (Inst.UiVisible == false)
             {
@@ -130,13 +132,14 @@ namespace Prime31.TransitionKit
                 duration = secondsToWait,
                 targetCenter = targetObj,
                 smoothness = smoothness,
-                backgroundColor = c ?? new Color(0, 0, 0, 1)
+                backgroundColor = c ?? new Color(0, 0, 0, 1),
+                actionCallbackBeforeLoadScene = actionBeforeLoadScene
             };
             TransitionKit.instance.transitionWithDelegate(circle);
         }
 
         //We have a Bug when this is used on Fire Devices.
-        public static void OpenCircle(string sceneName, float secondsToWait = 2.0f, float smoothness = 0.01f, GameObject targetObj = null, Color? c = null)
+        public static void OpenCircle(string sceneName, float secondsToWait = 2.0f, float smoothness = 0.01f, GameObject targetObj = null, Color? c = null , Action actionBeforeLoadScene = null)
         {
             if (Inst.UiVisible == false)
             {
@@ -150,7 +153,8 @@ namespace Prime31.TransitionKit
                 duration = secondsToWait,
                 targetCenter = targetObj,
                 smoothness = smoothness,
-                backgroundColor = c ?? new Color(0, 0, 0, 1)
+                backgroundColor = c ?? new Color(0, 0, 0, 1),
+                actionCallbackBeforeLoadScene = actionBeforeLoadScene
             };
             TransitionKit.instance.transitionWithDelegate(circle);
         }
@@ -184,6 +188,6 @@ namespace Prime31.TransitionKit
         private void onTransitionComplete()
         {
             _isUiVisible = true;
-        }        
+        }
     }
 }
