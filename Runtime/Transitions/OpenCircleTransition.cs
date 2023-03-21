@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 namespace AtaGames.TransitionKit.runtime
 {
