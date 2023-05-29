@@ -49,7 +49,7 @@ namespace AtaGames.TransitionKit.runtime
 
         public override Shader shaderForTransition()
         {
-            return Shader.Find(Constants.CircleCutoutShader);
+            return Shader.Find(TransitionKitConstants.CircleCutoutShader);
         }
 
         public override Texture2D textureForDisplay()

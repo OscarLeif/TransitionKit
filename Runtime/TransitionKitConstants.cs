@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace AtaGames.TransitionKit
 {
-    public class Constants
+    public class TransitionKitConstants
     {
         //Shader Names
         public const string FadeShader = "prime[31]/Transitions/Fader";

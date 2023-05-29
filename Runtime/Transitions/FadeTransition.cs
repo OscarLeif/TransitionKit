@@ -39,7 +39,7 @@ namespace AtaGames.TransitionKit
 
         public override Shader shaderForTransition()
         {
-            return Shader.Find(Constants.FadeShader);
+            return Shader.Find(TransitionKitConstants.FadeShader);
         }
 
         public override Texture2D textureForDisplay()

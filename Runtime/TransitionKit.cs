@@ -115,7 +115,7 @@ namespace AtaGames.TransitionKit
             {
                 elapsed += deltaTime;
                 var step = Mathf.Lerp(start, end, Mathf.Pow(elapsed / duration, 2f));
-                material.SetFloat(Constants._Progress, step);
+                material.SetFloat(TransitionKitConstants._Progress, step);
                 yield return null;
             }
         }
@@ -130,7 +130,7 @@ namespace AtaGames.TransitionKit
             {
                 elapsed += deltaTime;
                 var step = Mathf.Lerp(start, end, Mathf.Pow(elapsed / duration, 2f));
-                material.SetFloat(Constants._Progress, step);
+                material.SetFloat(TransitionKitConstants._Progress, step);
                 await Task.Yield();                
             }
         }
@@ -176,7 +176,7 @@ namespace AtaGames.TransitionKit
         private void Awake()
         {
             DontDestroyOnLoad(this);
-            material = new Material(Shader.Find(Constants.FadeShader));//Need a Shader to Initialize the Material.
+            material = new Material(Shader.Find(TransitionKitConstants.FadeShader));//Need a Shader to Initialize the Material.
         }
 
         #endregion
