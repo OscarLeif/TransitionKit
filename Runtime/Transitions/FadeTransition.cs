@@ -53,6 +53,7 @@ namespace AtaGames.TransitionKit.runtime
             {
                 if (TransitionLerp(-0.1f, 1.1f, false))
                 {
+                    counterHold = 0;
                     transitionState = TransitionState.Hold;
                     LoadScene();
                 }
