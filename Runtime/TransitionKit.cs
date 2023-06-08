@@ -1,9 +1,6 @@
 using AtaGames.TransitionKit.runtime;
 using System;
-using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace AtaGames.TransitionKit
 {
@@ -27,6 +24,13 @@ namespace AtaGames.TransitionKit
         public bool isWorking = false;
 
         public string NextScene;
+        public int NextSceneIndex;
+
+        public System.Action OnTransitionStart;
+        public System.Action OnTransitionEnd;
+
+        public System.Action BeforeSceneLoad;
+        public System.Action AfterSceneLoad;
 
         private void Awake()
         {
@@ -43,7 +47,22 @@ namespace AtaGames.TransitionKit
             NextScene = sceneName;
             fadeTransition.ResetCounter();
             fadeTransition.gameObject.SetActive(true);
+        }
 
+        public void FadeScreen(float duration, Color color)
+        {
+            if (isWorking) { return; }
+            NextScene = string.Empty;
+            NextSceneIndex = -1;
+            fadeTransition.ResetCounter();
+        }
+
+        public void CompletedTransition()
+        {
+            OnTransitionEnd?.Invoke();
+            isWorking = false;
+            NextScene = string.Empty;
+            NextSceneIndex = -1;
         }
     }
 }

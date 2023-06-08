@@ -20,7 +20,6 @@ namespace AtaGames.TransitionKit.runtime
 
         public TransitionState transitionState;
 
-
         public float duration = 1f;
 
         [System.NonSerialized] private float counterTransition;
@@ -36,6 +35,7 @@ namespace AtaGames.TransitionKit.runtime
             Material fader = new Material(Shader.Find(TransitionKitConstants.FadeShader));
             image.material = fader;
             Texture2D blackTex = new Texture2D(1, 1);
+            blackTex.name = "FadeTexture";
             blackTex.SetPixel(0, 0, Color.clear);
             blackTex.Apply();
             image.material.mainTexture = blackTex;
@@ -54,7 +54,7 @@ namespace AtaGames.TransitionKit.runtime
                 if (TransitionLerp(-0.1f, 1.1f, false))
                 {
                     transitionState = TransitionState.Hold;
-                    SceneManager.LoadSceneAsync(TransitionKit.NextScene);
+                    LoadScene();
                 }
             }
             if (transitionState == TransitionState.Hold)
@@ -71,10 +71,21 @@ namespace AtaGames.TransitionKit.runtime
             }
         }
 
+        //But Now Always I need to load a new Scene
         private void LoadScene()
         {
+            TransitionKit.BeforeSceneLoad?.Invoke();
+
             if (string.IsNullOrEmpty(TransitionKit.NextScene))
+            {
                 SceneManager.LoadSceneAsync(TransitionKit.NextScene);
+            }
+            else if (TransitionKit.NextSceneIndex >= 0)
+            {
+                SceneManager.LoadSceneAsync(TransitionKit.NextSceneIndex);
+            }
+
+            TransitionKit.AfterSceneLoad?.Invoke();
         }
 
         public void ResetCounter()
@@ -96,12 +107,13 @@ namespace AtaGames.TransitionKit.runtime
             if (complete && turnOff)
             {
                 gameObject.SetActive(false);
-                TransitionKit.isWorking = false;
+                TransitionKit.CompletedTransition();
             }
             return complete;
         }
     }
 
+    //Probably Need 2 more for Begin and Completed
     public enum TransitionState
     {
         StateIn, Hold, StateOut
