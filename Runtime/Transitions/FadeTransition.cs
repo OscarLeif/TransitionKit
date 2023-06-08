@@ -60,7 +60,7 @@ namespace AtaGames.TransitionKit.runtime
             if (transitionState == TransitionState.Hold)
             {
                 counterHold += Time.unscaledDeltaTime;
-                if (counterHold > 0.1f)
+                if (counterHold > 0.2f)
                 {
                     transitionState = TransitionState.StateOut;
                 }
@@ -76,9 +76,9 @@ namespace AtaGames.TransitionKit.runtime
         {
             TransitionKit.BeforeSceneLoad?.Invoke();
 
-            if (string.IsNullOrEmpty(TransitionKit.NextScene))
+            if (string.IsNullOrEmpty(TransitionKit.NextSceneName) == false)
             {
-                SceneManager.LoadSceneAsync(TransitionKit.NextScene);
+                SceneManager.LoadSceneAsync(TransitionKit.NextSceneName);
             }
             else if (TransitionKit.NextSceneIndex >= 0)
             {
@@ -95,7 +95,6 @@ namespace AtaGames.TransitionKit.runtime
             this.counterTransition = 0;
             this.transitionState = TransitionState.StateIn;
         }
-
 
         private bool TransitionLerp(float start, float end, bool turnOff = true)
         {

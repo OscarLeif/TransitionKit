@@ -23,7 +23,7 @@ namespace AtaGames.TransitionKit
 
         public bool isWorking = false;
 
-        public string NextScene;
+        public string NextSceneName;
         public int NextSceneIndex;
 
         public System.Action OnTransitionStart;
@@ -45,6 +45,8 @@ namespace AtaGames.TransitionKit
             if (isWorking) { return; }
             if (fadeTransition == null) { }
             NextSceneIndex = sceneIndex;
+            NextSceneName = string.Empty;
+            fadeTransition.duration = duration;
             fadeTransition.ResetCounter();
             fadeTransition.gameObject.SetActive(true);
         }
@@ -53,7 +55,9 @@ namespace AtaGames.TransitionKit
         {
             if (isWorking) { return; }
             if (fadeTransition == null) { }
-            NextScene = sceneName;
+            NextSceneName = sceneName;
+            NextSceneIndex = -1;
+            fadeTransition.duration = duration;
             fadeTransition.ResetCounter();
             fadeTransition.gameObject.SetActive(true);
         }
@@ -61,7 +65,7 @@ namespace AtaGames.TransitionKit
         public void FadeScreen(float duration, Color color)
         {
             if (isWorking) { return; }
-            NextScene = string.Empty;
+            NextSceneName = string.Empty;
             NextSceneIndex = -1;
             fadeTransition.ResetCounter();
         }
@@ -70,7 +74,7 @@ namespace AtaGames.TransitionKit
         {
             OnTransitionEnd?.Invoke();
             isWorking = false;
-            NextScene = string.Empty;
+            NextSceneName = string.Empty;
             NextSceneIndex = -1;
         }
     }
