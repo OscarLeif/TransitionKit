@@ -40,6 +40,15 @@ namespace AtaGames.TransitionKit
             fadeTransition.TransitionKit = this;
         }
 
+        public void FadeScene(int sceneIndex, float duration, Color color)
+        {
+            if (isWorking) { return; }
+            if (fadeTransition == null) { }
+            NextSceneIndex = sceneIndex;
+            fadeTransition.ResetCounter();
+            fadeTransition.gameObject.SetActive(true);
+        }
+
         public void FadeScene(string sceneName, float duration, Color color)
         {
             if (isWorking) { return; }
