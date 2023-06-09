@@ -1,7 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -20,10 +17,24 @@ namespace AtaGames.TransitionKit.runtime
 
         public TransitionState transitionState;
 
+        public LoadState loadState;
+
         public float duration = 1f;
+        public float holdDuration = 0.5f;
 
         [System.NonSerialized] private float counterTransition;
         [System.NonSerialized] private float counterHold;
+        [System.NonSerialized] private float loadingProgressTarget;
+
+        private AsyncOperation loading;
+
+        public void ResetCounter()
+        {
+            transitionState = TransitionState.StateIn;
+            counterTransition= 0;
+            counterHold= 0;
+            loadingProgressTarget= 0;
+        }
 
         private void Awake()
         {
@@ -42,11 +53,6 @@ namespace AtaGames.TransitionKit.runtime
             gameObject.SetActive(false);
         }
 
-        private void OnEnable()
-        {
-
-        }
-
         private void Update()
         {
             if (transitionState == TransitionState.StateIn)
@@ -54,7 +60,7 @@ namespace AtaGames.TransitionKit.runtime
                 if (TransitionLerp(-0.1f, 1.1f, false))
                 {
                     counterHold = 0;
-                    transitionState = TransitionState.Hold;
+                    transitionState = TransitionState.Hold;                    
                     LoadScene();
                 }
             }
@@ -72,30 +78,85 @@ namespace AtaGames.TransitionKit.runtime
             }
         }
 
-        //But Now Always I need to load a new Scene
+        
         private void LoadScene()
         {
             TransitionKit.BeforeSceneLoad?.Invoke();
 
+            //When Using the Async Load Scene.
+            //It doesn't work properly on Android.
             if (string.IsNullOrEmpty(TransitionKit.NextSceneName) == false)
             {
-                SceneManager.LoadSceneAsync(TransitionKit.NextSceneName);
+                SceneManager.LoadScene(TransitionKit.NextSceneName);
             }
             else if (TransitionKit.NextSceneIndex >= 0)
             {
-                SceneManager.LoadSceneAsync(TransitionKit.NextSceneIndex);
+                SceneManager.LoadScene(TransitionKit.NextSceneIndex);
             }
+            else
+            {
+                Debug.LogWarning("No Valid Scene To Load");
+            }
+            //we could put a delay here.
 
             TransitionKit.AfterSceneLoad?.Invoke();
         }
 
-        public void ResetCounter()
-        {
-            TransitionKit.isWorking = true;
-            this.counterHold = 0;
-            this.counterTransition = 0;
-            this.transitionState = TransitionState.StateIn;
-        }
+        //public IEnumerator LoadSceneRoutine()
+        //{
+        //    TransitionKit.isWorking = true;
+        //    TransitionKit.OnTransitionStart?.Invoke();
+        //    float start = -0.1f;
+        //    float end = 1.1f;
+        //    //Lerp In
+        //    float timeElapsed = 0f;
+        //    float stepDuration = duration / 2;//Lerp In and Lerp Out
+
+        //    while (timeElapsed < stepDuration)
+        //    {
+        //        counterTransition = Mathf.Lerp(start, end, timeElapsed / stepDuration);
+        //        timeElapsed += Time.unscaledDeltaTime;
+        //        image.material.SetFloat(TransitionKitConstants._Progress, counterTransition);
+        //        yield return null;
+        //    }
+
+        //    TransitionKit.BeforeSceneLoad?.Invoke();
+
+        //    if (TransitionKit.NextSceneIndex >= 0)
+        //    {
+        //        loading = SceneManager.LoadSceneAsync(TransitionKit.NextSceneIndex);
+        //    }
+        //    else if (string.IsNullOrEmpty(TransitionKit.NextSceneName) == false)
+        //    {
+        //        loading = SceneManager.LoadSceneAsync(TransitionKit.NextSceneName);
+        //    }
+
+        //    while (loading.isDone == false)
+        //    {
+        //        yield return null;
+        //    }
+        //    yield return new WaitForSecondsRealtime(holdDuration);
+        //    TransitionKit.AfterSceneLoad?.Invoke();
+
+        //    timeElapsed = 0f;
+        //    start = 1.1f;
+        //    end = -0.1f;
+
+        //    yield return null;
+        //    //Lerp Out
+        //    while (timeElapsed < stepDuration)
+        //    {
+        //        counterTransition = Mathf.Lerp(start, end, timeElapsed / stepDuration);
+        //        timeElapsed += Time.unscaledDeltaTime;
+        //        image.material.SetFloat(TransitionKitConstants._Progress, counterTransition);
+        //        yield return null;
+        //    }
+        //    TransitionKit.CompletedTransition();
+        //    Debug.Log("Done!");
+        //    //gameObject.SetActive(false);
+        //    //Hold
+        //}
+
 
         private bool TransitionLerp(float start, float end, bool turnOff = true)
         {
@@ -117,5 +178,11 @@ namespace AtaGames.TransitionKit.runtime
     public enum TransitionState
     {
         StateIn, Hold, StateOut
+    }
+
+    //Async Loading. 
+    public enum LoadState
+    {
+        Begin, Loading, Completed
     }
 }

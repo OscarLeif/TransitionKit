@@ -32,6 +32,8 @@ namespace AtaGames.TransitionKit
         public System.Action BeforeSceneLoad;
         public System.Action AfterSceneLoad;
 
+        public bool Initialize;
+
         private void Awake()
         {
             GameObject FadeTransition = new GameObject(nameof(FadeTransition));
@@ -40,15 +42,24 @@ namespace AtaGames.TransitionKit
             fadeTransition.TransitionKit = this;
         }
 
+        private void Start()
+        {
+            Initialize = true;
+        }
+
         public void FadeScene(int sceneIndex, float duration, Color color)
         {
             if (isWorking) { return; }
             if (fadeTransition == null) { }
+
             NextSceneIndex = sceneIndex;
             NextSceneName = string.Empty;
-            fadeTransition.duration = duration;
+            fadeTransition.duration = duration / 2;
             fadeTransition.ResetCounter();
             fadeTransition.gameObject.SetActive(true);
+
+            OnTransitionStart?.Invoke();
+            //StartCoroutine(fadeTransition.LoadSceneRoutine());
         }
 
         public void FadeScene(string sceneName, float duration, Color color)
@@ -57,9 +68,12 @@ namespace AtaGames.TransitionKit
             if (fadeTransition == null) { }
             NextSceneName = sceneName;
             NextSceneIndex = -1;
-            fadeTransition.duration = duration;
+
+            fadeTransition.image.color = color;
+            fadeTransition.duration = duration / 2f;
             fadeTransition.ResetCounter();
             fadeTransition.gameObject.SetActive(true);
+            //StartCoroutine(fadeTransition.LoadScene());
         }
 
         public void FadeScreen(float duration, Color color)
@@ -76,6 +90,19 @@ namespace AtaGames.TransitionKit
             isWorking = false;
             NextSceneName = string.Empty;
             NextSceneIndex = -1;
+            OnTransitionStart = OnTransitionEnd = null;
+            BeforeSceneLoad = AfterSceneLoad = null;
+        }
+
+        private bool IsWorking()
+        {
+            if (isWorking)
+            {
+#if UNITY_EDITOR
+                Debug.Log("Transition Kit is Working");
+#endif
+            }
+            return isWorking;
         }
     }
 }
