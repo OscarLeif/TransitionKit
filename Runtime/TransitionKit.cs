@@ -19,7 +19,7 @@ namespace AtaGames.TransitionKit
             }
         }
 
-        private FadeTransition fadeTransition;
+        public FadeTransition fadeTransition;
 
         public bool isWorking = false;
 
@@ -69,7 +69,8 @@ namespace AtaGames.TransitionKit
             NextSceneName = sceneName;
             NextSceneIndex = -1;
 
-            fadeTransition.image.color = color;
+            //fadeTransition.image.color = color;//Vertex Color
+            fadeTransition.image.material.SetColor("_Color", color);//Shader Color
             fadeTransition.duration = duration / 2f;
             fadeTransition.ResetCounter();
             fadeTransition.gameObject.SetActive(true);

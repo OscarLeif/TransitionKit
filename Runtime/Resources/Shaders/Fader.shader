@@ -4,7 +4,7 @@
 	{
 		_MainTex("Base (RGB)", 2D) = "white" {}
 		_Progress("Fade Amount", Range(0.0, 1.0)) = 0.0
-		_Color("Fade to Color", Color) = (0, 0, 0, 1)
+		_Color("Main Color", Color) = (0, 0, 0, 1)
 	}
 
 		SubShader
