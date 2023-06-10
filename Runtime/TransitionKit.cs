@@ -95,15 +95,13 @@ namespace AtaGames.TransitionKit
             BeforeSceneLoad = AfterSceneLoad = null;
         }
 
-        private bool IsWorking()
+        public void OpenCircle(string levelLoad, float v, Color black, string player)
         {
-            if (isWorking)
-            {
-#if UNITY_EDITOR
-                Debug.Log("Transition Kit is Working");
-#endif
-            }
-            return isWorking;
+            Debug.Log("OPEN CIRCLE IS NOT PRESENT USE FADE ");
+            FadeScene(levelLoad, v, black);
         }
+
+        public bool IsWorking => isWorking;
+        
     }
 }
