@@ -8,7 +8,7 @@ namespace AtaGames.TransitionKit.runtime
     /// <summary>
     /// <see cref="TransitionKit"/>
     /// </summary>
-    public class FadeTransition : MonoBehaviour
+    public class FadeTransition : MonoBehaviour, ITransition
     {
         public TransitionKit TransitionKit;
 
@@ -54,7 +54,7 @@ namespace AtaGames.TransitionKit.runtime
             gameObject.SetActive(false);
         }
 
-        private void Update()
+        public void Update()
         {
             if (CoroutineWorking) return;
             if (transitionState == TransitionState.StateIn)
@@ -103,7 +103,7 @@ namespace AtaGames.TransitionKit.runtime
             TransitionKit.AfterSceneLoad?.Invoke();
         }
 
-        public IEnumerator LoadSceneRoutine()
+        public IEnumerator YieldTransition()
         {
             CoroutineWorking = true;
             //disable the update
@@ -186,17 +186,5 @@ namespace AtaGames.TransitionKit.runtime
             }
             return complete;
         }
-    }
-
-    //Probably Need 2 more for Begin and Completed
-    public enum TransitionState
-    {
-        StateIn, Hold, StateOut
-    }
-
-    //Async Loading. 
-    public enum LoadState
-    {
-        Begin, Loading, Completed
     }
 }

@@ -14,12 +14,13 @@ namespace AtaGames.TransitionKit
             if (Get == null)
             {
                 GameObject gameObject = new GameObject(nameof(TransitionKit));
-                Get = gameObject.AddComponent<TransitionKit>();
+                Get = gameObject.gameObject.AddComponent<TransitionKit>();
                 DontDestroyOnLoad(gameObject);
             }
         }
 
         public FadeTransition fadeTransition;
+        public OpenCircleTransition openCircleTransition;
 
         public bool isWorking = false;
 
@@ -36,10 +37,16 @@ namespace AtaGames.TransitionKit
 
         private void Awake()
         {
+            //FadeTransition GO
             GameObject FadeTransition = new GameObject(nameof(FadeTransition));
             FadeTransition.transform.parent = transform;
             fadeTransition = FadeTransition.AddComponent<FadeTransition>();
             fadeTransition.TransitionKit = this;
+            //OpenCircle GO
+            GameObject OpenCircleTransition = new GameObject(nameof(OpenCircleTransition));
+            OpenCircleTransition.transform.parent = transform;
+            openCircleTransition = OpenCircleTransition.AddComponent<OpenCircleTransition>();
+            openCircleTransition.TransitionKit = this;
         }
 
         private void Start()
@@ -85,6 +92,20 @@ namespace AtaGames.TransitionKit
             fadeTransition.ResetCounter();
         }
 
+
+        public void OpenCircle(string levelLoad, float duration, Color color, string player = null)
+        {
+            if (isWorking) return;
+            NextSceneName = levelLoad;
+            NextSceneIndex = -1;
+
+            openCircleTransition.followTag = player;
+            openCircleTransition.image.material.SetColor("_Color", color);//Shader Color
+            openCircleTransition.duration = duration;
+            openCircleTransition.ResetCounter();
+            openCircleTransition.gameObject.SetActive(true);
+        }
+
         public void CompletedTransition()
         {
             OnTransitionEnd?.Invoke();
@@ -95,13 +116,7 @@ namespace AtaGames.TransitionKit
             BeforeSceneLoad = AfterSceneLoad = null;
         }
 
-        public void OpenCircle(string levelLoad, float v, Color black, string player)
-        {
-            Debug.Log("OPEN CIRCLE IS NOT PRESENT USE FADE ");
-            FadeScene(levelLoad, v, black);
-        }
-
         public bool IsWorking => isWorking;
-        
+
     }
 }
