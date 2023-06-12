@@ -101,7 +101,7 @@ namespace AtaGames.TransitionKit
 
             openCircleTransition.followTag = player;
             openCircleTransition.image.material.SetColor("_Color", color);//Shader Color
-            openCircleTransition.duration = duration;
+            openCircleTransition.duration = duration / 2f;
             openCircleTransition.ResetCounter();
             openCircleTransition.gameObject.SetActive(true);
         }
