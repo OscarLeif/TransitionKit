@@ -31,7 +31,6 @@ namespace AtaGames.TransitionKit.runtime
         public string followTag = string.Empty;
         private Transform followTr = null;//Used only for the followTag
 
-
         //Shader Properties for Open Circle
         public static readonly int offsetID = Shader.PropertyToID("_Offset");
 
@@ -48,7 +47,13 @@ namespace AtaGames.TransitionKit.runtime
             blackTex.name = "OpenCirceTexture";
             blackTex.SetPixel(0, 0, Color.clear);
             blackTex.Apply();
-            image.material.mainTexture = blackTex;
+            image.material.mainTexture = blackTex;   
+            ResetCounter();
+        }
+
+        private IEnumerator Start()
+        {
+            yield return null;
             gameObject.SetActive(false);
         }
 
@@ -155,6 +160,7 @@ namespace AtaGames.TransitionKit.runtime
             counterTransition = 0;
             counterHold = 0;
             loadingProgressTarget = 0;
+            image.material.SetFloat(TransitionKitConstants._Progress, 0);
         }
     }
 }
