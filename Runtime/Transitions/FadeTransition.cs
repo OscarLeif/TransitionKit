@@ -52,19 +52,22 @@ namespace AtaGames.TransitionKit.runtime
             blackTex.name = "FadeTexture";
             blackTex.SetPixel(0, 0, Color.clear);
             blackTex.Apply();
-            image.material.mainTexture = blackTex;            
+            image.material.mainTexture = blackTex;
             ResetCounter();
         }
 
         private IEnumerator Start()
         {
             yield return null;
-            gameObject.SetActive(false);
+            DisableGameObject();
         }
 
         public void Update()
         {
             if (CoroutineWorking) return;
+
+            TransitionKit.isWorking = true;
+
             if (transitionState == TransitionState.StateIn)
             {
                 if (TransitionLerp(-0.1f, 1.1f, false))
@@ -194,5 +197,13 @@ namespace AtaGames.TransitionKit.runtime
             }
             return complete;
         }
+
+
+        private void DisableGameObject()
+        {
+            gameObject.SetActive(false);
+            TransitionKit.CompletedTransition();
+        }
+
     }
 }

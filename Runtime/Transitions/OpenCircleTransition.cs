@@ -47,20 +47,21 @@ namespace AtaGames.TransitionKit.runtime
             blackTex.name = "OpenCirceTexture";
             blackTex.SetPixel(0, 0, Color.clear);
             blackTex.Apply();
-            image.material.mainTexture = blackTex;   
+            image.material.mainTexture = blackTex;
             ResetCounter();
         }
 
         private IEnumerator Start()
         {
             yield return null;
-            gameObject.SetActive(false);
+            DisableGameObject();
         }
 
         public void Update()
         {
             if (CoroutineWorking) return;
 
+            TransitionKit.isWorking = true;
             SetCenter();
 
             if (transitionState == TransitionState.StateIn)
@@ -161,6 +162,14 @@ namespace AtaGames.TransitionKit.runtime
             counterHold = 0;
             loadingProgressTarget = 0;
             image.material.SetFloat(TransitionKitConstants._Progress, 0);
+        }
+
+        public void DisableGameObject()
+        {
+            gameObject.SetActive(false);
+            followTag = string.Empty;
+            followTr = null;
+            TransitionKit.CompletedTransition();
         }
     }
 }

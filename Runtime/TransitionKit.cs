@@ -98,7 +98,7 @@ namespace AtaGames.TransitionKit
             if (isWorking) return;
             NextSceneName = levelLoad;
             NextSceneIndex = -1;
-
+                        
             openCircleTransition.followTag = player;
             openCircleTransition.image.material.SetColor("_Color", color);//Shader Color
             openCircleTransition.duration = duration / 2f;
