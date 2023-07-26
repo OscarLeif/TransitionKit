@@ -1,5 +1,6 @@
 using AtaGames.TransitionKit.runtime;
 using System;
+using System.Collections;
 using UnityEngine;
 
 namespace AtaGames.TransitionKit
@@ -90,6 +91,15 @@ namespace AtaGames.TransitionKit
             NextSceneName = string.Empty;
             NextSceneIndex = -1;
             fadeTransition.ResetCounter();
+        }
+
+        public IEnumerator YieldFadeScreen(float duration,Color color)
+        {
+            //if Next scene is not setup 
+            fadeTransition.duration = duration / 2f;
+            fadeTransition.image.material.SetColor("_Color", color);//Shader Color
+            yield return fadeTransition.YieldTransition();
+            yield return null;
         }
 
 
