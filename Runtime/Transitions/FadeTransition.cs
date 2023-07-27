@@ -159,6 +159,7 @@ namespace AtaGames.TransitionKit.runtime
 
             Debug.Log("Fadeout");
             yield return new WaitForSecondsRealtime(holdDuration);
+
             TransitionKit.AfterSceneLoad?.Invoke();
 
             timeElapsed = 0f;

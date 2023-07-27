@@ -93,10 +93,10 @@ namespace AtaGames.TransitionKit
             fadeTransition.ResetCounter();
         }
 
-        public IEnumerator YieldFadeScreen(float duration,Color color)
+        public IEnumerator YieldFadeScreen(float duration, Color color)
         {
             //if Next scene is not setup 
-            fadeTransition.duration = duration / 2f;
+            fadeTransition.duration = duration / 2f;//InOut that's why divided by 2
             fadeTransition.image.material.SetColor("_Color", color);//Shader Color
             yield return fadeTransition.YieldTransition();
             yield return null;
@@ -108,7 +108,7 @@ namespace AtaGames.TransitionKit
             if (isWorking) return;
             NextSceneName = levelLoad;
             NextSceneIndex = -1;
-                        
+
             openCircleTransition.followTag = player;
             openCircleTransition.image.material.SetColor("_Color", color);//Shader Color
             openCircleTransition.duration = duration / 2f;
