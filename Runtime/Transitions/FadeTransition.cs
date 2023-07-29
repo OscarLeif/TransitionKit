@@ -136,6 +136,7 @@ namespace AtaGames.TransitionKit.runtime
                 image.material.SetFloat(TransitionKitConstants._Progress, counterTransition);
                 yield return null;
             }
+            image.material.SetFloat (TransitionKitConstants._Progress, end);
 
             TransitionKit.BeforeSceneLoad?.Invoke();
 
@@ -176,6 +177,8 @@ namespace AtaGames.TransitionKit.runtime
                 image.material.SetFloat(TransitionKitConstants._Progress, counterTransition);
                 yield return null;
             }
+            image.material.SetFloat (TransitionKitConstants._Progress, end);
+
             TransitionKit.CompletedTransition();
             CoroutineWorking = false;
             Debug.Log("Coroutine Done!");
