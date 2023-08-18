@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -61,7 +62,7 @@ namespace AtaGames.TransitionKit.runtime
             DisableGameObject();
         }
 
-        public void Update()
+        public async void Update()
         {
             if (CoroutineWorking) return;
 
@@ -78,14 +79,35 @@ namespace AtaGames.TransitionKit.runtime
             }
             if (transitionState == TransitionState.Hold)
             {
-                counterHold += Time.unscaledDeltaTime;
-                if (counterHold > 0.2f)
+                AsyncOperation asyncOperation = null;
+                if (string.IsNullOrEmpty(TransitionKit.NextSceneName) == false)
+                {
+                    asyncOperation = SceneManager.LoadSceneAsync(TransitionKit.NextSceneName);
+                }
+                else if (TransitionKit.NextSceneIndex >= 0)
+                {
+                    asyncOperation = SceneManager.LoadSceneAsync(TransitionKit.NextSceneIndex);
+                }
+
+                while (!asyncOperation.isDone)
+                {
+                    //loadingProgressTarget = asyncOperation.progress;
+                    await Task.Yield();
+                }
+                transitionState = TransitionState.HoldDelay;
+                counterHold = 0;
+
+            }
+            else if (transitionState == TransitionState.HoldDelay)
+            {
+                if (HoldTime())
                 {
                     transitionState = TransitionState.StateOut;
                 }
             }
             else if (transitionState == TransitionState.StateOut)
             {
+
                 TransitionLerp(1.1f, -0.1f);
             }
         }
@@ -135,7 +157,7 @@ namespace AtaGames.TransitionKit.runtime
                 image.material.SetFloat(TransitionKitConstants._Progress, counterTransition);
                 yield return null;
             }
-            image.material.SetFloat (TransitionKitConstants._Progress, end);
+            image.material.SetFloat(TransitionKitConstants._Progress, end);
 
             TransitionKit.BeforeSceneLoad?.Invoke();
 
@@ -176,7 +198,7 @@ namespace AtaGames.TransitionKit.runtime
                 image.material.SetFloat(TransitionKitConstants._Progress, counterTransition);
                 yield return null;
             }
-            image.material.SetFloat (TransitionKitConstants._Progress, end);
+            image.material.SetFloat(TransitionKitConstants._Progress, end);
 
             TransitionKit.CompletedTransition();
             CoroutineWorking = false;
@@ -199,6 +221,17 @@ namespace AtaGames.TransitionKit.runtime
                 TransitionKit.CompletedTransition();
             }
             return complete;
+        }
+
+        private bool HoldTime()
+        {
+            counterHold += Time.unscaledDeltaTime;
+            if (counterHold >= holdDuration)
+            {
+                counterHold = 0;
+                return true;
+            }
+            return false;
         }
 
 

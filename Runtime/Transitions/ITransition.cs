@@ -13,7 +13,7 @@ namespace AtaGames.TransitionKit.runtime
     //Probably Need 2 more for Begin and Completed
     public enum TransitionState
     {
-        StateIn, Hold, StateOut
+        StateIn, Hold, HoldDelay, StateOut
     }
 
     //Async Loading. 

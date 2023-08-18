@@ -43,6 +43,7 @@ namespace AtaGames.TransitionKit
             FadeTransition.transform.parent = transform;
             fadeTransition = FadeTransition.AddComponent<FadeTransition>();
             fadeTransition.TransitionKit = this;
+
             //OpenCircle GO
             GameObject OpenCircleTransition = new GameObject(nameof(OpenCircleTransition));
             OpenCircleTransition.transform.parent = transform;
