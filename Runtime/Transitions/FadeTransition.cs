@@ -89,10 +89,13 @@ namespace AtaGames.TransitionKit.runtime
                     asyncOperation = SceneManager.LoadSceneAsync(TransitionKit.NextSceneIndex);
                 }
 
-                while (!asyncOperation.isDone)
+                if (asyncOperation != null)
                 {
-                    //loadingProgressTarget = asyncOperation.progress;
-                    await Task.Yield();
+                    while (!asyncOperation.isDone)
+                    {
+                        //loadingProgressTarget = asyncOperation.progress;
+                        await Task.Yield();
+                    }
                 }
                 transitionState = TransitionState.HoldDelay;
                 counterHold = 0;
