@@ -51,14 +51,15 @@ namespace AtaGames.TransitionKit
             openCircleTransition.TransitionKit = this;
         }
 
-        private void Start()
+        private IEnumerator Start()
         {
+            yield return null;
             Initialize = true;
         }
 
         public void FadeScene(int sceneIndex, float duration, Color color)
         {
-            if (isWorking) { return; }
+            if (isWorking) { Debug.Log("This should not happen check"); return; }
             if (fadeTransition == null) { }
 
             NextSceneIndex = sceneIndex;

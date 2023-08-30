@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace AtaGames.TransitionKit.runtime
 {
@@ -13,7 +11,7 @@ namespace AtaGames.TransitionKit.runtime
     //Probably Need 2 more for Begin and Completed
     public enum TransitionState
     {
-        StateIn, Hold, HoldDelay, StateOut
+        StateIn, LoadScene, Hold, StateOut
     }
 
     //Async Loading. 

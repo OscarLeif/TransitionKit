@@ -59,13 +59,17 @@ namespace AtaGames.TransitionKit.runtime
         private IEnumerator Start()
         {
             yield return null;
-            DisableGameObject();
+            gameObject.SetActive(false);
+        }
+
+        private void OnDisable()
+        {
+            loading = null;
         }
 
         public async void Update()
         {
             if (CoroutineWorking) return;
-
             TransitionKit.isWorking = true;
 
             if (transitionState == TransitionState.StateIn)
@@ -73,70 +77,74 @@ namespace AtaGames.TransitionKit.runtime
                 if (TransitionLerp(-0.1f, 1.1f, false))
                 {
                     counterHold = 0;
-                    transitionState = TransitionState.Hold;
-                    LoadScene();
+                    transitionState = TransitionState.LoadScene;
+                    TransitionKit.BeforeSceneLoad?.Invoke();
+                    //LoadScene();
                 }
             }
-            if (transitionState == TransitionState.Hold)
+            if (transitionState == TransitionState.LoadScene)
             {
-                AsyncOperation asyncOperation = null;
-                if (string.IsNullOrEmpty(TransitionKit.NextSceneName) == false)
+                if (loading == null)
                 {
-                    asyncOperation = SceneManager.LoadSceneAsync(TransitionKit.NextSceneName);
-                }
-                else if (TransitionKit.NextSceneIndex >= 0)
-                {
-                    asyncOperation = SceneManager.LoadSceneAsync(TransitionKit.NextSceneIndex);
+                    if (string.IsNullOrEmpty(TransitionKit.NextSceneName) == false)
+                    {
+                        loading = SceneManager.LoadSceneAsync(TransitionKit.NextSceneName);
+                    }
+                    else if (TransitionKit.NextSceneIndex >= 0)
+                    {
+                        loading = SceneManager.LoadSceneAsync(TransitionKit.NextSceneIndex);
+                    }
                 }
 
-                if (asyncOperation != null)
+                if (loading != null)
                 {
-                    while (!asyncOperation.isDone)
+                    while (!loading.isDone)
                     {
                         //loadingProgressTarget = asyncOperation.progress;
+                        Debug.Log("Loading Scene");
                         await Task.Yield();
                     }
                 }
-                transitionState = TransitionState.HoldDelay;
+                transitionState = TransitionState.Hold;
                 counterHold = 0;
 
             }
-            else if (transitionState == TransitionState.HoldDelay)
+            else if (transitionState == TransitionState.Hold)
             {
                 if (HoldTime())
                 {
+                    TransitionKit.AfterSceneLoad?.Invoke();
                     transitionState = TransitionState.StateOut;
                 }
             }
             else if (transitionState == TransitionState.StateOut)
             {
-
                 TransitionLerp(1.1f, -0.1f);
             }
         }
 
-        private void LoadScene()
-        {
-            TransitionKit.BeforeSceneLoad?.Invoke();
+        //private void LoadScene()
+        //{
+        //    TransitionKit.BeforeSceneLoad?.Invoke();
 
-            //When Using the Async Load Scene.
-            //It doesn't work properly on Android.
-            if (string.IsNullOrEmpty(TransitionKit.NextSceneName) == false)
-            {
-                SceneManager.LoadScene(TransitionKit.NextSceneName);
-            }
-            else if (TransitionKit.NextSceneIndex >= 0)
-            {
-                SceneManager.LoadScene(TransitionKit.NextSceneIndex);
-            }
-            else
-            {
-                Debug.LogWarning("No Valid Scene To Load");
-            }
-            //we could put a delay here.
+        //    //When Using the Async Load Scene.
+        //    //It doesn't work properly on Android.
+        //    if (string.IsNullOrEmpty(TransitionKit.NextSceneName) == false)
+        //    {
+        //        SceneManager.LoadScene(TransitionKit.NextSceneName);
+        //    }
+        //    else if (TransitionKit.NextSceneIndex >= 0)
+        //    {
+        //        SceneManager.LoadScene(TransitionKit.NextSceneIndex);
+        //    }
+        //    else
+        //    {
+        //        Debug.LogWarning("No Valid Scene To Load");
+        //    }
+        //    //we could put a delay here.
 
-            TransitionKit.AfterSceneLoad?.Invoke();
-        }
+        //    TransitionKit.AfterSceneLoad?.Invoke();
+        //}
 
         public IEnumerator YieldTransition()
         {

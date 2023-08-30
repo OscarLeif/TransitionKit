@@ -69,11 +69,11 @@ namespace AtaGames.TransitionKit.runtime
                 if (TransitionLerp(-0.1f, 1.1f, false))
                 {
                     counterHold = 0;
-                    transitionState = TransitionState.Hold;
+                    transitionState = TransitionState.LoadScene;
                     LoadScene();
                 }
             }
-            else if (transitionState == TransitionState.Hold)
+            else if (transitionState == TransitionState.LoadScene)
             {
                 counterHold += Time.unscaledDeltaTime;
                 if (counterHold >= holdDuration)
