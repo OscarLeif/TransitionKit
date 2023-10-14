@@ -98,10 +98,10 @@ namespace AtaGames.TransitionKit.runtime
 
                 if (loading != null)
                 {
-                    while (!loading.isDone)
+                    while (loading != null && !loading.isDone)
                     {
                         //loadingProgressTarget = asyncOperation.progress;
-                        Debug.Log("Loading Scene");
+                        //Debug.Log("Loading Scene");
                         await Task.Yield();
                     }
                 }
