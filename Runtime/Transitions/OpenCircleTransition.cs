@@ -105,7 +105,7 @@ namespace AtaGames.TransitionKit.runtime
                         followTr = go.transform;
                     }
                 }
-                if (Camera.main != null)
+                if (Camera.main != null && followTr != null)
                 {
                     Vector2 pos = Camera.main.WorldToViewportPoint(followTr.position);
                     this.image.material.SetVector(offsetID, pos);

@@ -1,6 +1,7 @@
 using AtaGames.TransitionKit.runtime;
 using System;
 using System.Collections;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 namespace AtaGames.TransitionKit
@@ -19,6 +20,8 @@ namespace AtaGames.TransitionKit
                 DontDestroyOnLoad(gameObject);
             }
         }
+
+        public bool IsWorking => isWorking;
 
         public FadeTransition fadeTransition;
         public OpenCircleTransition openCircleTransition;
@@ -104,14 +107,26 @@ namespace AtaGames.TransitionKit
             yield return null;
         }
 
+        public void OpenCircle(int levelLoad, float duration, Color color, string tag = null)
+        {
+            if (isWorking) return;
+            NextSceneName = string.Empty;
+            NextSceneIndex = levelLoad;
 
-        public void OpenCircle(string levelLoad, float duration, Color color, string player = null)
+            openCircleTransition.followTag = tag;
+            openCircleTransition.image.material.SetColor("_Color", color);//Shader Color
+            openCircleTransition.duration = duration / 2f;
+            openCircleTransition.ResetCounter();
+            openCircleTransition.gameObject.SetActive(true);
+        }
+
+        public void OpenCircle(string levelLoad, float duration, Color color, string tag = null)
         {
             if (isWorking) return;
             NextSceneName = levelLoad;
             NextSceneIndex = -1;
 
-            openCircleTransition.followTag = player;
+            openCircleTransition.followTag = tag;
             openCircleTransition.image.material.SetColor("_Color", color);//Shader Color
             openCircleTransition.duration = duration / 2f;
             openCircleTransition.ResetCounter();
@@ -128,7 +143,10 @@ namespace AtaGames.TransitionKit
             BeforeSceneLoad = AfterSceneLoad = null;
         }
 
-        public bool IsWorking => isWorking;
-
+        // Method to allow specific classes to set the working status
+        public void SetWorking(bool value)
+        {
+            isWorking = value;
+        }
     }
 }
