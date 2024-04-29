@@ -8,3 +8,4 @@ https://github.com/OscarLeif/TransitionKit-Demo
 Install as a Submodule 
 ``` git submodule add https://github.com/OscarLeif/TransitionKit.git "Assets/Submodules/TransitionKit" ```
 
+OscarLeif
