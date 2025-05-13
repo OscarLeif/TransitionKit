@@ -1,8 +1,7 @@
 using AtaGames.TransitionKit.runtime;
-using System;
 using System.Collections;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace AtaGames.TransitionKit
 {
@@ -13,12 +12,9 @@ namespace AtaGames.TransitionKit
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void AutoInit()
         {
-            if (Get == null)
-            {
-                GameObject gameObject = new GameObject(nameof(TransitionKit));
-                Get = gameObject.gameObject.AddComponent<TransitionKit>();
-                DontDestroyOnLoad(gameObject);
-            }
+            GameObject gameObject = new GameObject(nameof(TransitionKit));
+            Get = gameObject.gameObject.AddComponent<TransitionKit>();
+            DontDestroyOnLoad(gameObject);
         }
 
         public bool IsWorking => isWorking;
@@ -31,16 +27,21 @@ namespace AtaGames.TransitionKit
         public string NextSceneName;
         public int NextSceneIndex;
 
-        public System.Action OnTransitionStart;
-        public System.Action OnTransitionEnd;
+        public UnityEvent OnTransitionStart;
+        public UnityEvent OnTransitionEnd;
 
-        public System.Action BeforeSceneLoad;
-        public System.Action AfterSceneLoad;
+        public UnityEvent BeforeSceneLoad;
+        public UnityEvent AfterSceneLoad;
 
         public bool Initialize;
 
         private void Awake()
         {
+            OnTransitionStart = new UnityEvent();
+            OnTransitionEnd = new UnityEvent();
+            BeforeSceneLoad = new UnityEvent();
+            AfterSceneLoad = new UnityEvent();
+
             //FadeTransition GO
             GameObject FadeTransition = new GameObject(nameof(FadeTransition));
             FadeTransition.transform.parent = transform;
@@ -139,8 +140,10 @@ namespace AtaGames.TransitionKit
             isWorking = false;
             NextSceneName = string.Empty;
             NextSceneIndex = -1;
-            OnTransitionStart = OnTransitionEnd = null;
-            BeforeSceneLoad = AfterSceneLoad = null;
+            OnTransitionStart?.RemoveAllListeners();
+            OnTransitionEnd?.RemoveAllListeners();
+            BeforeSceneLoad?.RemoveAllListeners();
+            AfterSceneLoad?.RemoveAllListeners();
         }
 
         // Method to allow specific classes to set the working status
