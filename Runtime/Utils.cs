@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
-namespace AtaGames.TransitionKit.runtime
+namespace AtaGames.TransitionKit
 {
-    public static class TransitionUtils 
+    public static class Utils 
     {
         public static float LerpUnscaled(float from, float to, float timeDuration, ref float timeCounter, out bool complete)
         {
@@ -19,6 +20,12 @@ namespace AtaGames.TransitionKit.runtime
                 return to;
             }
             return value;
+        }
+
+        public static void FireAndClearEvent(UnityEvent evt)
+        {
+            evt?.Invoke();
+            evt.RemoveAllListeners();
         }
     }
 }

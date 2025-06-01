@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -60,12 +59,15 @@ namespace AtaGames.TransitionKit
 
         public IEnumerator YieldTransition()
         {
+            if (CoroutineWorking)
+                yield break;
+
             CoroutineWorking = true;
             gameObject.SetActive(true);
 
             TransitionKit.isWorking = true;
-            TransitionKit.OnTransitionStart?.Invoke();
-            TransitionKit.OnTransitionStart.RemoveAllListeners();
+
+            Utils.FireAndClearEvent(TransitionKit.OnTransitionStart);
 
             const float FadeInStart = -0.1f;
             const float FadeInEnd = 1.1f;
@@ -81,8 +83,7 @@ namespace AtaGames.TransitionKit
             }
             image.material.SetFloat(TransitionKitConstants._Progress, FadeInEnd);
 
-            TransitionKit.BeforeSceneLoad?.Invoke();
-            TransitionKit.BeforeSceneLoad.RemoveAllListeners();
+            Utils.FireAndClearEvent(TransitionKit.BeforeSceneLoad);
 
             if (TransitionKit.NextSceneIndex >= 0)
                 loading = SceneManager.LoadSceneAsync(TransitionKit.NextSceneIndex);
@@ -97,8 +98,7 @@ namespace AtaGames.TransitionKit
 
             yield return new WaitForSecondsRealtime(holdDuration);
 
-            TransitionKit.AfterSceneLoad?.Invoke();
-            TransitionKit.AfterSceneLoad.RemoveAllListeners();
+            Utils.FireAndClearEvent(TransitionKit.AfterSceneLoad);
 
             timeElapsed = 0f;
             const float FadeOutStart = 1.1f;
@@ -112,7 +112,6 @@ namespace AtaGames.TransitionKit
                 yield return null;
             }
             image.material.SetFloat(TransitionKitConstants._Progress, FadeOutEnd);
-
             TransitionKit.CompletedTransition();
             CoroutineWorking = false;
             gameObject.SetActive(false);
