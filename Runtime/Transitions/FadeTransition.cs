@@ -4,11 +4,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace AtaGames.TransitionKit.runtime
+namespace AtaGames.TransitionKit
 {
-    /// <summary>
-    /// <see cref="TransitionKit"/>
-    /// </summary>
     public class FadeTransition : MonoBehaviour, ITransition
     {
         public TransitionKit TransitionKit;
@@ -18,14 +15,10 @@ namespace AtaGames.TransitionKit.runtime
 
         public TransitionState transitionState;
 
-        public LoadState loadState;
-
         public float duration = 1f;
         public float holdDuration = 0.5f;
 
-        [System.NonSerialized] private float counterTransition;
-        [System.NonSerialized] private float counterHold;
-        [System.NonSerialized] private float loadingProgressTarget;
+        private float counterTransition;
 
         private AsyncOperation loading;
         private bool CoroutineWorking;
@@ -34,8 +27,6 @@ namespace AtaGames.TransitionKit.runtime
         {
             transitionState = TransitionState.StateIn;
             counterTransition = 0;
-            counterHold = 0;
-            loadingProgressTarget = 0;
             image.material.SetFloat(TransitionKitConstants._Progress, 0);
         }
 
@@ -43,7 +34,7 @@ namespace AtaGames.TransitionKit.runtime
         {
             canvas = gameObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 100;//High number to make sure it's on top of everything
+            canvas.sortingOrder = 100;
 
             image = gameObject.AddComponent<Image>();
             Material fader = new Material(Shader.Find(TransitionKitConstants.FadeShader));
@@ -67,190 +58,64 @@ namespace AtaGames.TransitionKit.runtime
             loading = null;
         }
 
-        public async void Update()
-        {
-            if (CoroutineWorking) return;
-            TransitionKit.isWorking = true;
-
-            if (transitionState == TransitionState.StateIn)
-            {
-                if (TransitionLerp(-0.1f, 1.1f, false))
-                {
-                    counterHold = 0;
-                    transitionState = TransitionState.LoadScene;
-                    TransitionKit.BeforeSceneLoad?.Invoke();
-                    //LoadScene();
-                }
-            }
-            if (transitionState == TransitionState.LoadScene)
-            {
-                if (loading == null)
-                {
-                    if (string.IsNullOrEmpty(TransitionKit.NextSceneName) == false)
-                    {
-                        loading = SceneManager.LoadSceneAsync(TransitionKit.NextSceneName);
-                    }
-                    else if (TransitionKit.NextSceneIndex >= 0)
-                    {
-                        loading = SceneManager.LoadSceneAsync(TransitionKit.NextSceneIndex);
-                    }
-                }
-
-                if (loading != null)
-                {
-                    while (loading != null && !loading.isDone)
-                    {
-                        //loadingProgressTarget = asyncOperation.progress;
-                        //Debug.Log("Loading Scene");
-                        await Task.Yield();
-                    }
-                }
-                transitionState = TransitionState.Hold;
-                counterHold = 0;
-
-            }
-            else if (transitionState == TransitionState.Hold)
-            {
-                if (HoldTime())
-                {
-                    TransitionKit.AfterSceneLoad?.Invoke();
-                    transitionState = TransitionState.StateOut;
-                }
-            }
-            else if (transitionState == TransitionState.StateOut)
-            {
-                TransitionLerp(1.1f, -0.1f);
-            }
-        }
-
-        //private void LoadScene()
-        //{
-        //    TransitionKit.BeforeSceneLoad?.Invoke();
-
-        //    //When Using the Async Load Scene.
-        //    //It doesn't work properly on Android.
-        //    if (string.IsNullOrEmpty(TransitionKit.NextSceneName) == false)
-        //    {
-        //        SceneManager.LoadScene(TransitionKit.NextSceneName);
-        //    }
-        //    else if (TransitionKit.NextSceneIndex >= 0)
-        //    {
-        //        SceneManager.LoadScene(TransitionKit.NextSceneIndex);
-        //    }
-        //    else
-        //    {
-        //        Debug.LogWarning("No Valid Scene To Load");
-        //    }
-        //    //we could put a delay here.
-
-        //    TransitionKit.AfterSceneLoad?.Invoke();
-        //}
-
         public IEnumerator YieldTransition()
         {
             CoroutineWorking = true;
-            //disable the update
             gameObject.SetActive(true);
-            //this.transitionState = TransitionState.StateOut;
 
             TransitionKit.isWorking = true;
             TransitionKit.OnTransitionStart?.Invoke();
-            float start = -0.1f;
-            float end = 1.1f;
-            //Lerp In
+            TransitionKit.OnTransitionStart.RemoveAllListeners();
+
+            const float FadeInStart = -0.1f;
+            const float FadeInEnd = 1.1f;
             float timeElapsed = 0f;
-            float stepDuration = duration / 2;//Lerp In and Lerp Out
+            float stepDuration = duration / 2f;
 
             while (timeElapsed < stepDuration)
             {
-                counterTransition = Mathf.Lerp(start, end, timeElapsed / stepDuration);
+                counterTransition = Mathf.Lerp(FadeInStart, FadeInEnd, timeElapsed / stepDuration);
                 timeElapsed += Time.unscaledDeltaTime;
                 image.material.SetFloat(TransitionKitConstants._Progress, counterTransition);
                 yield return null;
             }
-            image.material.SetFloat(TransitionKitConstants._Progress, end);
+            image.material.SetFloat(TransitionKitConstants._Progress, FadeInEnd);
 
             TransitionKit.BeforeSceneLoad?.Invoke();
+            TransitionKit.BeforeSceneLoad.RemoveAllListeners();
 
             if (TransitionKit.NextSceneIndex >= 0)
-            {
                 loading = SceneManager.LoadSceneAsync(TransitionKit.NextSceneIndex);
-            }
-            else if (string.IsNullOrEmpty(TransitionKit.NextSceneName) == false)
-            {
+            else if (!string.IsNullOrEmpty(TransitionKit.NextSceneName))
                 loading = SceneManager.LoadSceneAsync(TransitionKit.NextSceneName);
-            }
 
             if (loading != null)
             {
-                while (loading.isDone == false)
-                {
-                    Debug.Log("Loading");
+                while (!loading.isDone)
                     yield return null;
-                }
             }
 
-            Debug.Log("Fadeout");
             yield return new WaitForSecondsRealtime(holdDuration);
 
             TransitionKit.AfterSceneLoad?.Invoke();
+            TransitionKit.AfterSceneLoad.RemoveAllListeners();
 
             timeElapsed = 0f;
-            start = 1.1f;
-            end = -0.1f;
+            const float FadeOutStart = 1.1f;
+            const float FadeOutEnd = -0.1f;
 
-            yield return null;
-            //Lerp Out
             while (timeElapsed < stepDuration)
             {
-                Debug.Log("Fadeout");
-                counterTransition = Mathf.Lerp(start, end, timeElapsed / stepDuration);
+                counterTransition = Mathf.Lerp(FadeOutStart, FadeOutEnd, timeElapsed / stepDuration);
                 timeElapsed += Time.unscaledDeltaTime;
                 image.material.SetFloat(TransitionKitConstants._Progress, counterTransition);
                 yield return null;
             }
-            image.material.SetFloat(TransitionKitConstants._Progress, end);
+            image.material.SetFloat(TransitionKitConstants._Progress, FadeOutEnd);
 
             TransitionKit.CompletedTransition();
             CoroutineWorking = false;
-            Debug.Log("Coroutine Done!");
             gameObject.SetActive(false);
-            //Hold
         }
-
-
-        private bool TransitionLerp(float start, float end, bool turnOff = true)
-        {
-            float value = TransitionUtils.LerpUnscaled(start, end, duration, ref counterTransition, out bool complete);
-            if (image != null && image.material != null)
-            {
-                image.material.SetFloat(TransitionKitConstants._Progress, value);
-            }
-            if (complete && turnOff)
-            {
-                gameObject.SetActive(false);
-                TransitionKit.CompletedTransition();
-            }
-            return complete;
-        }
-
-        private bool HoldTime()
-        {
-            counterHold += Time.unscaledDeltaTime;
-            if (counterHold >= holdDuration)
-            {
-                counterHold = 0;
-                return true;
-            }
-            return false;
-        }
-
-
-        private void DisableGameObject()
-        {
-            gameObject.SetActive(false);
-            TransitionKit.CompletedTransition();
-        }
-
     }
 }

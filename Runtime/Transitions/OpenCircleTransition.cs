@@ -1,11 +1,9 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace AtaGames.TransitionKit.runtime
+namespace AtaGames.TransitionKit
 {
     public class OpenCircleTransition : MonoBehaviour, ITransition
     {
@@ -55,37 +53,7 @@ namespace AtaGames.TransitionKit.runtime
         {
             yield return null;
             DisableGameObject();
-        }
-
-        public void Update()
-        {
-            if (CoroutineWorking) return;
-
-            TransitionKit.isWorking = true;
-            SetCenter();
-
-            if (transitionState == TransitionState.StateIn)
-            {
-                if (TransitionLerp(-0.1f, 1.1f, false))
-                {
-                    counterHold = 0;
-                    transitionState = TransitionState.LoadScene;
-                    LoadScene();
-                }
-            }
-            else if (transitionState == TransitionState.LoadScene)
-            {
-                counterHold += Time.unscaledDeltaTime;
-                if (counterHold >= holdDuration)
-                {
-                    transitionState = TransitionState.StateOut;
-                }
-            }
-            else if (transitionState == TransitionState.StateOut)
-            {
-                TransitionLerp(1.1f, -0.1f);
-            }
-        }
+        }        
 
         public IEnumerator YieldTransition()
         {
@@ -137,25 +105,7 @@ namespace AtaGames.TransitionKit.runtime
                 Debug.LogWarning("No Valid Scene To Load");
             }
             //we could put a delay here.
-
             TransitionKit.AfterSceneLoad?.Invoke();
-        }
-
-        private bool TransitionLerp(float start, float end, bool turnOff = true)
-        {
-            float value = TransitionUtils.LerpUnscaled(start, end, duration, ref counterTransition, out bool complete);
-            if (image != null && image.material != null)
-            {
-                image.material.SetFloat(TransitionKitConstants._Progress, value);
-            }
-            if (complete && turnOff)
-            {
-                gameObject.SetActive(false);
-                followTag = string.Empty;
-                followTr = null;
-                TransitionKit.CompletedTransition();
-            }
-            return complete;
         }
 
         public void ResetCounter()

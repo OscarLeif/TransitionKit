@@ -1,4 +1,3 @@
-using AtaGames.TransitionKit.runtime;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
@@ -13,7 +12,7 @@ namespace AtaGames.TransitionKit
         public static void AutoInit()
         {
             GameObject gameObject = new GameObject(nameof(TransitionKit));
-            Get = gameObject.gameObject.AddComponent<TransitionKit>();
+            Get = gameObject.AddComponent<TransitionKit>();
             DontDestroyOnLoad(gameObject);
         }
 
@@ -29,7 +28,6 @@ namespace AtaGames.TransitionKit
 
         public UnityEvent OnTransitionStart;
         public UnityEvent OnTransitionEnd;
-
         public UnityEvent BeforeSceneLoad;
         public UnityEvent AfterSceneLoad;
 
@@ -37,21 +35,19 @@ namespace AtaGames.TransitionKit
 
         private void Awake()
         {
-            OnTransitionStart = new UnityEvent();
-            OnTransitionEnd = new UnityEvent();
-            BeforeSceneLoad = new UnityEvent();
-            AfterSceneLoad = new UnityEvent();
+            OnTransitionStart ??= new UnityEvent();
+            OnTransitionEnd ??= new UnityEvent();
+            BeforeSceneLoad ??= new UnityEvent();
+            AfterSceneLoad ??= new UnityEvent();
 
-            //FadeTransition GO
-            GameObject FadeTransition = new GameObject(nameof(FadeTransition));
-            FadeTransition.transform.parent = transform;
-            fadeTransition = FadeTransition.AddComponent<FadeTransition>();
+            GameObject fadeGO = new GameObject(nameof(FadeTransition));
+            fadeGO.transform.parent = transform;
+            fadeTransition = fadeGO.AddComponent<FadeTransition>();
             fadeTransition.TransitionKit = this;
 
-            //OpenCircle GO
-            GameObject OpenCircleTransition = new GameObject(nameof(OpenCircleTransition));
-            OpenCircleTransition.transform.parent = transform;
-            openCircleTransition = OpenCircleTransition.AddComponent<OpenCircleTransition>();
+            GameObject circleGO = new GameObject(nameof(OpenCircleTransition));
+            circleGO.transform.parent = transform;
+            openCircleTransition = circleGO.AddComponent<OpenCircleTransition>();
             openCircleTransition.TransitionKit = this;
         }
 
@@ -63,49 +59,37 @@ namespace AtaGames.TransitionKit
 
         public void FadeScene(int sceneIndex, float duration, Color color)
         {
-            if (isWorking) { Debug.Log("This should not happen check"); return; }
-            if (fadeTransition == null) { }
+            if (isWorking) return;
 
             NextSceneIndex = sceneIndex;
             NextSceneName = string.Empty;
-            fadeTransition.duration = duration / 2;
+            fadeTransition.duration = duration / 2f;
+            fadeTransition.image.material.SetColor("_Color", color);
             fadeTransition.ResetCounter();
             fadeTransition.gameObject.SetActive(true);
 
-            OnTransitionStart?.Invoke();
-            //StartCoroutine(fadeTransition.LoadSceneRoutine());
+            StartCoroutine(fadeTransition.YieldTransition());
         }
 
         public void FadeScene(string sceneName, float duration, Color color)
         {
-            if (isWorking) { return; }
-            if (fadeTransition == null) { }
+            if (isWorking) return;
+
             NextSceneName = sceneName;
             NextSceneIndex = -1;
-
-            //fadeTransition.image.color = color;//Vertex Color
-            fadeTransition.image.material.SetColor("_Color", color);//Shader Color
+            fadeTransition.image.material.SetColor("_Color", color);
             fadeTransition.duration = duration / 2f;
             fadeTransition.ResetCounter();
             fadeTransition.gameObject.SetActive(true);
-            //StartCoroutine(fadeTransition.LoadScene());
-        }
 
-        public void FadeScreen(float duration, Color color)
-        {
-            if (isWorking) { return; }
-            NextSceneName = string.Empty;
-            NextSceneIndex = -1;
-            fadeTransition.ResetCounter();
+            StartCoroutine(fadeTransition.YieldTransition());
         }
 
         public IEnumerator YieldFadeScreen(float duration, Color color)
         {
-            //if Next scene is not setup 
-            fadeTransition.duration = duration / 2f;//InOut that's why divided by 2
-            fadeTransition.image.material.SetColor("_Color", color);//Shader Color
+            fadeTransition.duration = duration / 2f;
+            fadeTransition.image.material.SetColor("_Color", color);
             yield return fadeTransition.YieldTransition();
-            yield return null;
         }
 
         public void OpenCircle(int levelLoad, float duration, Color color, string tag = null)
@@ -115,7 +99,7 @@ namespace AtaGames.TransitionKit
             NextSceneIndex = levelLoad;
 
             openCircleTransition.followTag = tag;
-            openCircleTransition.image.material.SetColor("_Color", color);//Shader Color
+            openCircleTransition.image.material.SetColor("_Color", color);
             openCircleTransition.duration = duration / 2f;
             openCircleTransition.ResetCounter();
             openCircleTransition.gameObject.SetActive(true);
@@ -128,7 +112,7 @@ namespace AtaGames.TransitionKit
             NextSceneIndex = -1;
 
             openCircleTransition.followTag = tag;
-            openCircleTransition.image.material.SetColor("_Color", color);//Shader Color
+            openCircleTransition.image.material.SetColor("_Color", color);
             openCircleTransition.duration = duration / 2f;
             openCircleTransition.ResetCounter();
             openCircleTransition.gameObject.SetActive(true);
@@ -146,7 +130,6 @@ namespace AtaGames.TransitionKit
             AfterSceneLoad?.RemoveAllListeners();
         }
 
-        // Method to allow specific classes to set the working status
         public void SetWorking(bool value)
         {
             isWorking = value;
