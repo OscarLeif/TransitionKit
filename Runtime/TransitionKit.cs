@@ -103,6 +103,8 @@ namespace AtaGames.TransitionKit
             openCircleTransition.duration = duration / 2f;
             openCircleTransition.ResetCounter();
             openCircleTransition.gameObject.SetActive(true);
+
+            StartCoroutine(openCircleTransition.YieldTransition());
         }
 
         public void OpenCircle(string levelLoad, float duration, Color color, string tag = null)

@@ -12,8 +12,6 @@ namespace AtaGames.TransitionKit
         public Canvas canvas;
         public Image image;
 
-        public TransitionState transitionState;
-
         public float duration = 1f;
         public float holdDuration = 0.5f;
 
@@ -24,7 +22,6 @@ namespace AtaGames.TransitionKit
 
         public void ResetCounter()
         {
-            transitionState = TransitionState.StateIn;
             counterTransition = 0;
             image.material.SetFloat(TransitionKitConstants._Progress, 0);
         }
