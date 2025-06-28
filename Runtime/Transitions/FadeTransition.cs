@@ -66,6 +66,13 @@ namespace AtaGames.TransitionKit
 
             Utils.FireAndClearEvent(TransitionKit.OnTransitionStart);
 
+            yield return Resources.UnloadUnusedAssets();
+            System.GC.Collect();
+
+            // Optional: force GC (for dev/debug builds)
+            #if UNITY_EDITOR
+            #endif
+
             const float FadeInStart = -0.1f;
             const float FadeInEnd = 1.1f;
             float timeElapsed = 0f;
