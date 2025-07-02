@@ -66,12 +66,7 @@ namespace AtaGames.TransitionKit
 
             Utils.FireAndClearEvent(TransitionKit.OnTransitionStart);
 
-            yield return Resources.UnloadUnusedAssets();
-            System.GC.Collect();
-
-            // Optional: force GC (for dev/debug builds)
-            #if UNITY_EDITOR
-            #endif
+            
 
             const float FadeInStart = -0.1f;
             const float FadeInEnd = 1.1f;
@@ -85,6 +80,7 @@ namespace AtaGames.TransitionKit
                 image.material.SetFloat(TransitionKitConstants._Progress, counterTransition);
                 yield return null;
             }
+            //The Screen Should be Black here
             image.material.SetFloat(TransitionKitConstants._Progress, FadeInEnd);
 
             Utils.FireAndClearEvent(TransitionKit.BeforeSceneLoad);
@@ -99,8 +95,12 @@ namespace AtaGames.TransitionKit
                 while (!loading.isDone)
                     yield return null;
             }
-
+            //Extras delay safe purposes
             yield return new WaitForSecondsRealtime(holdDuration);
+
+            //Cleanup while screen is Black
+            yield return Resources.UnloadUnusedAssets();
+            System.GC.Collect();
 
             Utils.FireAndClearEvent(TransitionKit.AfterSceneLoad);
 

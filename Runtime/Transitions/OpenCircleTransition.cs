@@ -117,6 +117,7 @@ namespace AtaGames.TransitionKit
                 SetCenter();
                 yield return null;
             }
+            //The Screen should be black here
             image.material.SetFloat(TransitionKitConstants._Progress, FadeInEnd);
 
             Utils.FireAndClearEvent(TransitionKit.BeforeSceneLoad);
@@ -131,8 +132,11 @@ namespace AtaGames.TransitionKit
                 while (!loading.isDone)
                     yield return null;
             }
-
+            //Extras delay safe purposes
             yield return new WaitForSecondsRealtime(holdDuration);
+            //Cleanup while screen is Black
+            yield return Resources.UnloadUnusedAssets();
+            System.GC.Collect();
 
             Utils.FireAndClearEvent(TransitionKit.AfterSceneLoad);
 
