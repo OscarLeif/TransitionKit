@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace AtaGames.TransitionKit
 {
@@ -20,12 +17,6 @@ namespace AtaGames.TransitionKit
                 return to;
             }
             return value;
-        }
-
-        public static void FireAndClearEvent(UnityEvent evt)
-        {
-            evt?.Invoke();
-            evt.RemoveAllListeners();
         }
     }
 }

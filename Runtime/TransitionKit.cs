@@ -1,6 +1,6 @@
+using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace AtaGames.TransitionKit
 {
@@ -16,6 +16,11 @@ namespace AtaGames.TransitionKit
             DontDestroyOnLoad(gameObject);
         }
 
+        public void InvokeOnTransitionStart() => OnTransitionStart?.Invoke();
+        public void InvokeOnTransitionEnd() => OnTransitionEnd?.Invoke();
+        public void InvokeBeforeSceneLoad() => BeforeSceneLoad?.Invoke();
+        public void InvokeAfterSceneLoad() => AfterSceneLoad?.Invoke();
+
         public bool IsWorking => isWorking;
 
         public FadeTransition fadeTransition;
@@ -26,20 +31,15 @@ namespace AtaGames.TransitionKit
         public string NextSceneName;
         public int NextSceneIndex;
 
-        public UnityEvent OnTransitionStart;
-        public UnityEvent OnTransitionEnd;
-        public UnityEvent BeforeSceneLoad;
-        public UnityEvent AfterSceneLoad;
+        public event Action OnTransitionStart;
+        public event Action OnTransitionEnd;
+        public event Action BeforeSceneLoad;
+        public event Action AfterSceneLoad;
 
         public bool Initialize;
 
         private void Awake()
         {
-            OnTransitionStart ??= new UnityEvent();
-            OnTransitionEnd ??= new UnityEvent();
-            BeforeSceneLoad ??= new UnityEvent();
-            AfterSceneLoad ??= new UnityEvent();
-
             GameObject fadeGO = new GameObject(nameof(FadeTransition));
             fadeGO.transform.parent = transform;
             fadeTransition = fadeGO.AddComponent<FadeTransition>();
@@ -128,10 +128,10 @@ namespace AtaGames.TransitionKit
             isWorking = false;
             NextSceneName = string.Empty;
             NextSceneIndex = -1;
-            OnTransitionStart?.RemoveAllListeners();
-            OnTransitionEnd?.RemoveAllListeners();
-            BeforeSceneLoad?.RemoveAllListeners();
-            AfterSceneLoad?.RemoveAllListeners();
+            OnTransitionStart = null;
+            OnTransitionEnd = null;
+            BeforeSceneLoad = null;
+            AfterSceneLoad = null;
         }
 
         public void SetWorking(bool value)

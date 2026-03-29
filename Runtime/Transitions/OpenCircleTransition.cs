@@ -103,7 +103,7 @@ namespace AtaGames.TransitionKit
 
             TransitionKit.isWorking= true;
 
-            Utils.FireAndClearEvent(TransitionKit.OnTransitionStart);
+            TransitionKit.InvokeOnTransitionStart();
             const float FadeInStart = -0.1f;
             const float FadeInEnd = 1.1f;
             float timeElapsed = 0f;
@@ -120,7 +120,7 @@ namespace AtaGames.TransitionKit
             //The Screen should be black here
             image.material.SetFloat(TransitionKitConstants._Progress, FadeInEnd);
 
-            Utils.FireAndClearEvent(TransitionKit.BeforeSceneLoad);
+            TransitionKit.InvokeBeforeSceneLoad();
 
             if (TransitionKit.NextSceneIndex >= 0)
                 loading = SceneManager.LoadSceneAsync(TransitionKit.NextSceneIndex);
@@ -136,9 +136,8 @@ namespace AtaGames.TransitionKit
             yield return new WaitForSecondsRealtime(holdDuration);
             //Cleanup while screen is Black
             yield return Resources.UnloadUnusedAssets();
-            System.GC.Collect();
-
-            Utils.FireAndClearEvent(TransitionKit.AfterSceneLoad);
+            
+            TransitionKit.InvokeAfterSceneLoad();
 
             timeElapsed = 0f;
             const float FadeOutStart = 1.1f;

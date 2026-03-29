@@ -20,6 +20,8 @@ namespace AtaGames.TransitionKit
         private AsyncOperation loading;
         private bool CoroutineWorking;
 
+        private static readonly WaitForSecondsRealtime holdWait = new WaitForSecondsRealtime(0.5f);
+
         public void ResetCounter()
         {
             counterTransition = 0;
@@ -60,65 +62,68 @@ namespace AtaGames.TransitionKit
                 yield break;
 
             CoroutineWorking = true;
-            gameObject.SetActive(true);
-
-            TransitionKit.isWorking = true;
-
-            Utils.FireAndClearEvent(TransitionKit.OnTransitionStart);
-
-            
-
-            const float FadeInStart = -0.1f;
-            const float FadeInEnd = 1.1f;
-            float timeElapsed = 0f;
-            float stepDuration = duration / 2f;
-
-            while (timeElapsed < stepDuration)
+            try
             {
-                counterTransition = Mathf.Lerp(FadeInStart, FadeInEnd, timeElapsed / stepDuration);
-                timeElapsed += Time.unscaledDeltaTime;
-                image.material.SetFloat(TransitionKitConstants._Progress, counterTransition);
-                yield return null;
-            }
-            //The Screen Should be Black here
-            image.material.SetFloat(TransitionKitConstants._Progress, FadeInEnd);
+                gameObject.SetActive(true);
+                TransitionKit.isWorking = true;
 
-            Utils.FireAndClearEvent(TransitionKit.BeforeSceneLoad);
+                TransitionKit.InvokeOnTransitionStart();
 
-            if (TransitionKit.NextSceneIndex >= 0)
-                loading = SceneManager.LoadSceneAsync(TransitionKit.NextSceneIndex);
-            else if (!string.IsNullOrEmpty(TransitionKit.NextSceneName))
-                loading = SceneManager.LoadSceneAsync(TransitionKit.NextSceneName);
+                const float FadeInStart = -0.1f;
+                const float FadeInEnd = 1.1f;
+                float timeElapsed = 0f;
+                float stepDuration = duration / 2f;
 
-            if (loading != null)
-            {
-                while (!loading.isDone)
+                while (timeElapsed < stepDuration)
+                {
+                    counterTransition = Mathf.Lerp(FadeInStart, FadeInEnd, timeElapsed / stepDuration);
+                    timeElapsed += Time.unscaledDeltaTime;
+                    image.material.SetFloat(TransitionKitConstants._Progress, counterTransition);
                     yield return null;
+                }
+                //The Screen Should be Black here
+                image.material.SetFloat(TransitionKitConstants._Progress, FadeInEnd);
+
+                TransitionKit.InvokeBeforeSceneLoad();
+
+                if (TransitionKit.NextSceneIndex >= 0)
+                    loading = SceneManager.LoadSceneAsync(TransitionKit.NextSceneIndex);
+                else if (!string.IsNullOrEmpty(TransitionKit.NextSceneName))
+                    loading = SceneManager.LoadSceneAsync(TransitionKit.NextSceneName);
+
+                if (loading != null)
+                {
+                    while (!loading.isDone)
+                        yield return null;
+                }
+                //Extras delay safe purposes
+                yield return holdDuration;
+
+                //Cleanup while screen is Black
+                yield return Resources.UnloadUnusedAssets();
+
+                TransitionKit.InvokeAfterSceneLoad();
+
+                timeElapsed = 0f;
+                const float FadeOutStart = 1.1f;
+                const float FadeOutEnd = -0.1f;
+
+                while (timeElapsed < stepDuration)
+                {
+                    counterTransition = Mathf.Lerp(FadeOutStart, FadeOutEnd, timeElapsed / stepDuration);
+                    timeElapsed += Time.unscaledDeltaTime;
+                    image.material.SetFloat(TransitionKitConstants._Progress, counterTransition);
+                    yield return null;
+                }
+                image.material.SetFloat(TransitionKitConstants._Progress, FadeOutEnd);
+                TransitionKit.CompletedTransition();
+                gameObject.SetActive(false);
             }
-            //Extras delay safe purposes
-            yield return new WaitForSecondsRealtime(holdDuration);
-
-            //Cleanup while screen is Black
-            yield return Resources.UnloadUnusedAssets();
-            System.GC.Collect();
-
-            Utils.FireAndClearEvent(TransitionKit.AfterSceneLoad);
-
-            timeElapsed = 0f;
-            const float FadeOutStart = 1.1f;
-            const float FadeOutEnd = -0.1f;
-
-            while (timeElapsed < stepDuration)
+            finally
             {
-                counterTransition = Mathf.Lerp(FadeOutStart, FadeOutEnd, timeElapsed / stepDuration);
-                timeElapsed += Time.unscaledDeltaTime;
-                image.material.SetFloat(TransitionKitConstants._Progress, counterTransition);
-                yield return null;
+                CoroutineWorking = false;
             }
-            image.material.SetFloat(TransitionKitConstants._Progress, FadeOutEnd);
-            TransitionKit.CompletedTransition();
-            CoroutineWorking = false;
-            gameObject.SetActive(false);
+
         }
     }
 }
