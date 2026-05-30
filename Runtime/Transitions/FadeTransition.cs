@@ -56,6 +56,32 @@ namespace AtaGames.TransitionKit
             loading = null;
         }
 
+        public IEnumerator YieldFadeOut()
+        {
+            gameObject.SetActive(true);
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                image.material.SetFloat(TransitionKitConstants._Progress, Mathf.Lerp(-0.1f, 1.1f, elapsed / duration));
+                elapsed += Time.unscaledDeltaTime;
+                yield return null;
+            }
+            image.material.SetFloat(TransitionKitConstants._Progress, 1.1f);
+        }
+
+        public IEnumerator YieldFadeIn()
+        {
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                image.material.SetFloat(TransitionKitConstants._Progress, Mathf.Lerp(1.1f, -0.1f, elapsed / duration));
+                elapsed += Time.unscaledDeltaTime;
+                yield return null;
+            }
+            image.material.SetFloat(TransitionKitConstants._Progress, -0.1f);
+            gameObject.SetActive(false);
+        }
+
         public IEnumerator YieldTransition()
         {
             if (CoroutineWorking)

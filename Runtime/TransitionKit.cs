@@ -92,6 +92,43 @@ namespace AtaGames.TransitionKit
             yield return fadeTransition.YieldTransition();
         }
 
+        public IEnumerator YieldFadeOut(float duration, Color color)
+        {
+            fadeTransition.duration = duration;
+            fadeTransition.image.material.SetColor("_Color", color);
+            fadeTransition.ResetCounter();
+            yield return fadeTransition.YieldFadeOut();
+        }
+
+        public IEnumerator YieldFadeIn(float duration, Color color)
+        {
+            fadeTransition.duration = duration;
+            fadeTransition.image.material.SetColor("_Color", color);
+            yield return fadeTransition.YieldFadeIn();
+        }
+
+        /// <summary>
+        /// Fades the screen to a solid color, invokes the action (use it to swap GameObjects),
+        /// then fades back in. No scene loading or lifecycle callbacks involved.
+        /// </summary>
+        public void FadeScreen(float fadeOutTime, float fadeInTime, Color color, System.Action onBlackScreen)
+        {
+            StartCoroutine(FadeScreenRoutine(fadeOutTime, fadeInTime, color, onBlackScreen));
+        }
+
+        private IEnumerator FadeScreenRoutine(float fadeOutTime, float fadeInTime, Color color, System.Action onBlackScreen)
+        {
+            fadeTransition.image.material.SetColor("_Color", color);
+            fadeTransition.duration = fadeOutTime;
+            fadeTransition.ResetCounter();
+            yield return fadeTransition.YieldFadeOut();
+
+            onBlackScreen?.Invoke();
+
+            fadeTransition.duration = fadeInTime;
+            yield return fadeTransition.YieldFadeIn();
+        }
+
         public void OpenCircle(int levelLoad, float duration, Color color, string tag = null)
         {
             if (isWorking) return;
