@@ -85,6 +85,22 @@ namespace AtaGames.TransitionKit
             StartCoroutine(fadeTransition.YieldTransition());
         }
 
+        /// <summary>
+        /// Fades to a solid color and back without loading a scene. The optional
+        /// action runs while the screen is fully covered.
+        /// </summary>
+        public void FadeInOut(float duration, Color color, Action onFadeOut = null)
+        {
+            if (isWorking) return;
+
+            if (onFadeOut != null)
+                BeforeSceneLoad += onFadeOut;
+
+            // A negative scene index is the sentinel used by FadeTransition to
+            // perform the transition without requesting a scene load.
+            FadeScene(-1, duration, color);
+        }
+
         public IEnumerator YieldFadeScreen(float duration, Color color)
         {
             fadeTransition.duration = duration / 2f;
